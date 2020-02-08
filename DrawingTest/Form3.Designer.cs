@@ -30,10 +30,10 @@
         {
             this.Tabs = new System.Windows.Forms.TabControl();
             this.Red = new System.Windows.Forms.TabPage();
-            this.Green = new System.Windows.Forms.TabPage();
             this.RedTable = new System.Windows.Forms.TableLayoutPanel();
-            this.Blue = new System.Windows.Forms.TabPage();
+            this.Green = new System.Windows.Forms.TabPage();
             this.GreenTable = new System.Windows.Forms.TableLayoutPanel();
+            this.Blue = new System.Windows.Forms.TabPage();
             this.BlueTable = new System.Windows.Forms.TableLayoutPanel();
             this.AcceptBtn = new System.Windows.Forms.Button();
             this.CancelBtn = new System.Windows.Forms.Button();
@@ -64,17 +64,6 @@
             this.Red.TabIndex = 0;
             this.Red.Text = "Red";
             this.Red.UseVisualStyleBackColor = true;
-            // 
-            // Green
-            // 
-            this.Green.Controls.Add(this.GreenTable);
-            this.Green.Location = new System.Drawing.Point(4, 25);
-            this.Green.Name = "Green";
-            this.Green.Padding = new System.Windows.Forms.Padding(3);
-            this.Green.Size = new System.Drawing.Size(919, 576);
-            this.Green.TabIndex = 1;
-            this.Green.Text = "Green";
-            this.Green.UseVisualStyleBackColor = true;
             // 
             // RedTable
             // 
@@ -125,16 +114,16 @@
             this.RedTable.Size = new System.Drawing.Size(871, 530);
             this.RedTable.TabIndex = 1;
             // 
-            // Blue
+            // Green
             // 
-            this.Blue.Controls.Add(this.BlueTable);
-            this.Blue.Location = new System.Drawing.Point(4, 25);
-            this.Blue.Name = "Blue";
-            this.Blue.Padding = new System.Windows.Forms.Padding(3);
-            this.Blue.Size = new System.Drawing.Size(880, 576);
-            this.Blue.TabIndex = 2;
-            this.Blue.Text = "Blue";
-            this.Blue.UseVisualStyleBackColor = true;
+            this.Green.Controls.Add(this.GreenTable);
+            this.Green.Location = new System.Drawing.Point(4, 25);
+            this.Green.Name = "Green";
+            this.Green.Padding = new System.Windows.Forms.Padding(3);
+            this.Green.Size = new System.Drawing.Size(880, 576);
+            this.Green.TabIndex = 1;
+            this.Green.Text = "Green";
+            this.Green.UseVisualStyleBackColor = true;
             // 
             // GreenTable
             // 
@@ -184,6 +173,17 @@
             this.GreenTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5F));
             this.GreenTable.Size = new System.Drawing.Size(871, 530);
             this.GreenTable.TabIndex = 2;
+            // 
+            // Blue
+            // 
+            this.Blue.Controls.Add(this.BlueTable);
+            this.Blue.Location = new System.Drawing.Point(4, 25);
+            this.Blue.Name = "Blue";
+            this.Blue.Padding = new System.Windows.Forms.Padding(3);
+            this.Blue.Size = new System.Drawing.Size(880, 576);
+            this.Blue.TabIndex = 2;
+            this.Blue.Text = "Blue";
+            this.Blue.UseVisualStyleBackColor = true;
             // 
             // BlueTable
             // 
@@ -242,6 +242,7 @@
             this.AcceptBtn.TabIndex = 2;
             this.AcceptBtn.Text = "Accept";
             this.AcceptBtn.UseVisualStyleBackColor = true;
+            this.AcceptBtn.Click += new System.EventHandler(this.AcceptBtn_Click);
             // 
             // CancelBtn
             // 
@@ -251,6 +252,7 @@
             this.CancelBtn.TabIndex = 3;
             this.CancelBtn.Text = "Cancel";
             this.CancelBtn.UseVisualStyleBackColor = true;
+            this.CancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
             // 
             // Form3
             // 

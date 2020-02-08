@@ -26,7 +26,7 @@ namespace DrawingTest
 
         Form2 formCaller;
 
-        public Form3(int Height, int Width, Color[] valuesColo, Point pointA, Point pointB, Form formCaller)
+        public Form3(int Height, int Width, Color[] valuesColor, Point pointA, Point pointB, Form formCaller)
         {
             InitializeComponent();
             //initialize TextBox controls for each channel
@@ -82,8 +82,10 @@ namespace DrawingTest
         }
 
 
-        public void readData()
+        public void readDataAndAccept()
         {
+            DrawingPiece drawingPiece = new DrawingPiece();
+
             colorTable = new Color[Width * Height];
             for (int x = 0; x < Width; x++)
             {
@@ -97,12 +99,28 @@ namespace DrawingTest
                 }
             }
 
+            drawingPiece.colorsToApply = colorTable;
+            drawingPiece.pointA = this.pointA;
+            drawingPiece.pointB = this.pointB;
+
+            formCaller._drawingPiece = drawingPiece;
+
 
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void AcceptBtn_Click(object sender, EventArgs e)
+        {
+            this.readDataAndAccept();
+        }
+
+        private void CancelBtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

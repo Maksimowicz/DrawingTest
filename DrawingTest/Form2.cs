@@ -42,7 +42,20 @@ namespace DrawingTest
         DirectBitmap directBitmap { get; set; }
         DirectBitmap directBitmapOrig { get; set; }
         DirectBitmap directBitmapPost { get; set; }
-            
+        
+        public DrawingPiece drawingPiece { get; set; }
+        public DrawingPiece _drawingPiece
+        {
+            get
+            {
+                return drawingPiece;
+            }
+            set
+            {
+                drawingPiece = value;
+                //TODO: funcka rysująca zmiany
+            }
+        }
        
     
 
@@ -86,6 +99,66 @@ namespace DrawingTest
 
             }
         }
+
+        private void readFromFrom3()
+        {
+            int XStart = 0;
+            int XEnd = 0;
+
+            int YStart = 0;
+            int YEnd = 0;
+
+            var differenceX = drawingPiece.pointA.X - drawingPiece.pointB.X;
+            var differenceY = drawingPiece.pointA.Y - drawingPiece.pointB.Y;
+
+            Point pointAInner = drawingPiece.pointA;
+            Point pointBInner = drawingPiece.pointB;
+
+            if (Math.Abs(differenceX) > 20)
+            {
+                if (differenceX > 0)
+                {
+                   
+                    XStart = pointAInner.X;
+                    XEnd = pointBInner.X;
+
+                }
+                else
+                {
+               
+                    XStart = pointBInner.X;
+                    XEnd = pointAInner.X;
+                }
+            }
+
+            if (Math.Abs(differenceY) > 20)
+            {
+                if (differenceY > 0)
+                {
+                    YStart = pointAInner.Y;
+                    YEnd = pointBInner.Y;
+                }
+                else
+                {
+                    YStart = pointBInner.Y;
+                    YEnd = pointAInner.Y;
+                }
+            }
+            int xInner = 0;
+            int yInner = 0;
+
+            for (int x = XStart; x < XEnd; x++)
+            {
+                for (int y = YStart; y < YEnd; y++)
+                {
+                    directBitmap.SetPixel(x, y, drawingPiece.colorsToApply[x + (y * Width)]);
+                }
+                yInner = 0;
+                xInner++;
+            }
+        }
+
+
 
         //  = Point.Empty;//Point.Empty represents null for a Point object
 
@@ -233,7 +306,7 @@ namespace DrawingTest
                             xInner++;
                         }
                         
-                        Form3 form3 = new Form3(Height, Width, valuesToPass);
+                        Form3 form3 = new Form3(Height, Width, valuesToPass, lastPoint, _nextPoint, this);
                         form3.Show();
 
                        
@@ -560,9 +633,8 @@ namespace DrawingTest
 
         private void toolStripMenuItem2_Click_1(object sender, EventArgs e)
         {
-            int[] mask = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            // projectEngine.neighborhoodOperationHSV(mask, KernelMethod.NoBorders, SccalingMethod.Cut);
-            //projectEngine.TURN_BLACK(directBitmap);
+            //  int[] mask = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+            int[] mask = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
             projectEngine.neighborhoodOperationHSV(mask, directBitmapOrig, directBitmap);
             
             using (Graphics g = Graphics.FromImage(pictureBox1.Image))
