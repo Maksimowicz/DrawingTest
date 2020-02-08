@@ -13,27 +13,7 @@ using System.Windows.Forms;
 
 namespace DrawingTest
 {
-    public class DrawingPiece
-    {
-        public Color[] colorsToApply { get; set; }
-        public Point pointA { get; set; }
-        public Point pointB { get; set; }
-    }
-
-
-
-
-    public enum DrawingType
-    {
-        FreeHand,
-        Line,
-        ManyLines,
-        Retclange
-
-    }
-
-
-
+ 
     public partial class Form2 : Form
     {
 
@@ -196,12 +176,7 @@ namespace DrawingTest
             formCaller.histogramDataRGBMainProp = directBitmap.generateHistogram();
             formCaller.histogramDataHSVProp = directBitmap.generateHistogramHSV();
             projectEngine = new ProjectEngine();
-            //projectEngine.directBitmapPre = new DirectBitmap(directBitmapOrig);
-            //projectEngine.directBitmapPost = new DirectBitmap(directBitmapOrig);
-            //projectEngine.directBitmapPre.generateHSVBits();
-            //projectEngine.directBitmapPost.generateHSVBits();
-
-            //this.
+          
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -357,13 +332,13 @@ namespace DrawingTest
                                 histogramDataLineRGB.blueHisto[color.B]++;
                                 histogramDataLineRGB.greenHisto[color.G]++;
 
-                                histogramDataLineRGB.HSV_HHisto.TryGetValue((float)Math.Round(hsvBit.HUE, 0), out helperValue);
+                                histogramDataLineRGB.HSV_HHisto.TryGetValue(hsvBit.HUE, out helperValue);
                                 histogramDataLineRGB.HSV_HHisto[hsvBit.HUE] = helperValue + 1;
 
-                                histogramDataLineRGB.HSV_SHisto.TryGetValue((float)Math.Round(hsvBit.saturation,1), out helperValue);
+                                histogramDataLineRGB.HSV_SHisto.TryGetValue(hsvBit.saturation, out helperValue);
                                 histogramDataLineRGB.HSV_SHisto[hsvBit.saturation] = helperValue + 1;
 
-                                histogramDataLineRGB.HSV_VHisto.TryGetValue((float)Math.Round(hsvBit.value,1), out helperValue);
+                                histogramDataLineRGB.HSV_VHisto.TryGetValue(hsvBit.value, out helperValue);
                                 histogramDataLineRGB.HSV_VHisto[hsvBit.value] = helperValue + 1;
 
 
@@ -451,6 +426,7 @@ namespace DrawingTest
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
 
         {
+            int helperValue = 0;
             List<Point> listOfDrawnPoints;
             if (isMouseDown == true && drawingType == DrawingType.FreeHand)//check to see if the mouse button is down
 
@@ -467,6 +443,7 @@ namespace DrawingTest
 
                         foreach (var x in listOfDrawnPoints)
                         {
+                            HSVBit hsvBit = directBitmapOrig.GetPixelHSV(x.X, x.Y);
                             Color color = directBitmapOrig.GetPixel(x.X, x.Y);
                             drawnPointList.Add(new DrawnPoint(directBitmapOrig.GetPixel(x.X, x.Y), x));
                             histogramDataLineRGB.redHisto[color.R]++;
@@ -474,9 +451,23 @@ namespace DrawingTest
                             histogramDataLineRGB.greenHisto[color.G]++;
                             //formCaller.histogramDataLineRGBProp = histogramDataLineRGB;
 
+                            histogramDataLineRGB.HSV_HHisto.TryGetValue(hsvBit.HUE, out helperValue);
+                            histogramDataLineRGB.HSV_HHisto[hsvBit.HUE] = helperValue + 1;
+
+                            histogramDataLineRGB.HSV_SHisto.TryGetValue(hsvBit.saturation, out helperValue);
+                            histogramDataLineRGB.HSV_SHisto[hsvBit.saturation] = helperValue + 1;
+
+                            histogramDataLineRGB.HSV_VHisto.TryGetValue(hsvBit.value, out helperValue);
+                            histogramDataLineRGB.HSV_VHisto[hsvBit.value] = helperValue + 1;
+
                             formCaller.ser1.Points.AddXY(color.R, histogramDataLineRGB.redHisto[color.R]);
                             formCaller.ser2.Points.AddXY(color.G, histogramDataLineRGB.greenHisto[color.G]);
                             formCaller.ser3.Points.AddXY(color.B, histogramDataLineRGB.blueHisto[color.B]);
+
+                            formCaller.seriesHExt.Points.AddXY(hsvBit.HUE, histogramDataLineRGB.HSV_HHisto[hsvBit.HUE]);
+                            formCaller.seriesSExt.Points.AddXY(hsvBit.saturation, histogramDataLineRGB.HSV_SHisto[hsvBit.saturation]);
+                            formCaller.seriesVExt.Points.AddXY(hsvBit.value, histogramDataLineRGB.HSV_VHisto[hsvBit.value]);
+
                         }
 
                         foreach (var x in listOfDrawnPoints)
@@ -648,5 +639,25 @@ namespace DrawingTest
 
             
         }
+    }
+
+
+    public class DrawingPiece
+    {
+        public Color[] colorsToApply { get; set; }
+        public Point pointA { get; set; }
+        public Point pointB { get; set; }
+    }
+
+
+
+
+    public enum DrawingType
+    {
+        FreeHand,
+        Line,
+        ManyLines,
+        Retclange
+
     }
 }
