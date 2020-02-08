@@ -19,20 +19,27 @@ namespace DrawingTest
 
         int x = 1;
         int y = 1;
+
+        //Serie wykresów
         public Series ser1;
         public Series ser2;
         public Series ser3;
 
-
+        //Series wykresów HSV
         public Series seriesHExt;
         public Series seriesSExt;
         public Series seriesVExt;
 
+        //Ścieżka wczytanego pliku
         string filePathInner { get; set; }
+
+        //Obiekt reprezentujący tablicę pikseli, tablica jednowymiarowa, rzutowana na 2 wymiarową
         public DirectBitmap directBitmap { get; set; }
 
+        //Klasa reprezentujaća dane wykorzystywane na histogramie
         public HistogramData histogramDataRGBMain;
 
+        //Właściwość klasy powyżej (pozwala na obsługę get; seet;)
         public HistogramData histogramDataRGBMainProp
         {
             get
@@ -42,13 +49,14 @@ namespace DrawingTest
             set
             {
                 histogramDataRGBMain = value;
-                boi(histogramDataRGBMain,RGBMain);
+                updateCharts(histogramDataRGBMain,RGBMain);
             }
         }
 
-
+        //Klasa reprezentująca histogram (dla profilu liniowego)
         public HistogramData histogramDataLineRGB { get; set; }
 
+        //Właściwość dla pola powyżej
         public HistogramData histogramDataLineRGBProp
         {
             get
@@ -58,11 +66,13 @@ namespace DrawingTest
             set
             {
                 histogramDataLineRGB = value;
-                boi(histogramDataLineRGB, RGBLine);
+                updateCharts(histogramDataLineRGB, RGBLine);
             }
         }
 
+        //Klasa reprezentująca histogram (dla modelu HSV)
         public HistogramData histogramDataHSV { get; set; }
+       //Właściwość pola powyżej
         public HistogramData histogramDataHSVProp
         {
             get
@@ -78,33 +88,32 @@ namespace DrawingTest
         }
 
        
-
+        //Lista punktów narysowanych na obrazie 
         List<DrawnPoint> drawnPointList;
 
-
+        //Konstruktor formatki
         public Form1()
-
-        {
-            //605 355
-           
+        {  
             InitializeComponent();
 
+            //Inicjalizacja zbiorów danych dla wykresu RGB
             ser1 = new Series
             {
                 Name = "seriesRed",
                 Color = System.Drawing.Color.Red,
-                IsVisibleInLegend = true,
+                IsVisibleInLegend = false,
                 IsXValueIndexed = true,
-                ChartType = SeriesChartType.Column
+                ChartType = SeriesChartType.Column,
+            
 
             };
             ser1.IsXValueIndexed = false;
-
+            
             ser2 = new Series
             {
                 Name = "seriesGreen",
                 Color = System.Drawing.Color.Green,
-                IsVisibleInLegend = true,
+                IsVisibleInLegend = false,
                 IsXValueIndexed = true,
                 ChartType = SeriesChartType.Column
             };
@@ -114,19 +123,21 @@ namespace DrawingTest
             {
                 Name = "seriesBlue",
                 Color = System.Drawing.Color.Blue,
-                IsVisibleInLegend = true,
+                IsVisibleInLegend = false,
                 IsXValueIndexed = true,
                 ChartType = SeriesChartType.Column
             };
 
             ser3.IsXValueIndexed = false;
 
+
+            //Dodanie utworzonych zbiorów danych do konkretnego wykresu
             RGBLine.Series.Add(ser1);
             RGBLine.Series.Add(ser2);
             RGBLine.Series.Add(ser3);
 
 
-
+            //Generowanie zbirów danych dla wykresów HSV
             seriesHExt = new Series
             {
                 Name = "seriesH",
@@ -140,7 +151,7 @@ namespace DrawingTest
             {
                 Name = "seriesS",
                 Color = Color.Black,
-                IsVisibleInLegend = true,
+                IsVisibleInLegend = false,
                 IsXValueIndexed = false,
                 ChartType = SeriesChartType.Column
             };
@@ -149,11 +160,12 @@ namespace DrawingTest
             {
                 Name = "seriesV",
                 Color = Color.Red,
-                IsVisibleInLegend = true,
+                IsVisibleInLegend = false,
                 IsXValueIndexed = false,
                 ChartType = SeriesChartType.Column
             };
 
+            //Przypisanie konkretnych źródeł do wykresów
             HLine.Series.Add(seriesHExt);
 
             SVLine.Series.Add(seriesSExt);
@@ -162,54 +174,46 @@ namespace DrawingTest
         }
 
      
+        //Metoda ładująca plik do Form2
         private void LoadFile_Click(object sender, EventArgs e)
         {
-            //isGrey = false;
+           //Zmienne pomocnicze
             var fileContent = string.Empty;
             var filePath = string.Empty;
             Image image;
 
+            //Rozpoczęcie procesu otwierania pliku
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
+                //zdefiniowanie możliwych rozszerzeń
                 openFileDialog.Filter = "BMP files (*.bmp)|*.bmp|PNG files (*.png)|*.png|JPG files (*.jpg)|*.jpg|JPEG files (*.jpeg)|*.jpeg|GIF files (*.gif)|*.gif";
                 openFileDialog.FilterIndex = 0;
                 openFileDialog.RestoreDirectory = true;
 
+                //jeżeli zatwierdzono dialog box
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    //Get the path
+                    //pobież ścieżkę
                     filePath = openFileDialog.FileName;
                     var fileStream = openFileDialog.OpenFile();
-                    //pictureBox1.ImageLocation = filePath;
-                    //Dilation added using emguCV
-                    //imageEmgu = new Image<Bgr, byte>(filePath);
+                
                     filePathInner = filePath;
                     Image img = Image.FromFile(filePathInner);
-                    //pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-
+         
+                    //inicjalizacja Form 2 (do obrabiania obrazu)
                     Form2 form2 = new Form2(this);
                     form2.ImageToShow = img;
                     
 
                     form2.Show();
-                    //form2.Dispose();
-                   // imageProcessingEngine = new ImageProcessingEngine(fileStream);
-                    //imageProcessingEngine.generateHistogram();
-                    //ImagePostBox.Image = null;
-
-                    //  ImageBox.Paint += 
+                
+   
                 }
 
             }
         }
 
-
-        void initializeLine()
-        {
-
-        }
-
-
+        //Metoda aktualizująca wykresy HSV
         void updateHSV_H(HistogramData histogramData, Chart chartControl)
         {
             chartControl.Series.Clear();
@@ -234,7 +238,7 @@ namespace DrawingTest
                 }
             }
 
-            if(chartControl.Name == "HSV_SV")
+            if (chartControl.Name == "HSV_SV")
             {
                 var seriesS = new Series
                 {
@@ -274,14 +278,13 @@ namespace DrawingTest
 
 
             }
-           /// ChartAreaCollection col = chartControl.ChartAreas;
 
         }
 
 
-        void boi(HistogramData histogramData, Chart chartControl)
+        void updateCharts(HistogramData histogramData, Chart chartControl)
         {
-            //HistogramData histogramData = imageProcessingEngine.hitogramsData;
+         
 
 
             chartControl.Series.Clear();

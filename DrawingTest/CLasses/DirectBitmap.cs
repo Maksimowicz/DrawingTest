@@ -129,11 +129,7 @@ namespace ImageProcessingMM.EngineClasses
             {
                 hsvBit.HUE = hsvBit.HUE + 360;
             }
-            //int a = 0;
-            //if(hsvBit.HUE < 0)
-            //{
-            //    a = 2;
-            //}
+           
 
             if(cMax == 0)
             {
@@ -146,10 +142,7 @@ namespace ImageProcessingMM.EngineClasses
 
             hsvBit.value = cMax;
 
-            if (hsvBit.value > 1 || hsvBit.saturation > 1)
-            {
-                hsvBit.saturation = 1;
-            }
+        
 
             return hsvBit;
         }

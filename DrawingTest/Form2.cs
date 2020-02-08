@@ -13,8 +13,7 @@ using System.Windows.Forms;
 
 namespace DrawingTest
 {
- 
-    public partial class Form2 : Form
+   public partial class Form2 : Form
     {
 
         ProjectEngine projectEngine;
@@ -163,8 +162,12 @@ namespace DrawingTest
           
         }
 
+        //Ładowanie fomratki
         private void Form2_Load(object sender, EventArgs e)
         {
+
+            //Inicjalizacja obiektów niezbędnych do działania formatki
+
             pictureBox1.Image = ImageToShow;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureOriginal = (Bitmap)ImageToShow.Clone();
@@ -176,7 +179,15 @@ namespace DrawingTest
             formCaller.histogramDataRGBMainProp = directBitmap.generateHistogram();
             formCaller.histogramDataHSVProp = directBitmap.generateHistogramHSV();
             projectEngine = new ProjectEngine();
-          
+
+
+            formCaller.ser1.IsVisibleInLegend = true;
+            formCaller.ser2.IsVisibleInLegend = true;
+            formCaller.ser3.IsVisibleInLegend = true;
+
+            formCaller.seriesHExt.IsVisibleInLegend = true;
+            formCaller.seriesSExt.IsVisibleInLegend = true;
+            formCaller.seriesVExt.IsVisibleInLegend = true;
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -379,9 +390,6 @@ namespace DrawingTest
                     {
                         _nextPoint = e.Location;
 
-
-                        numericUpDown3.Value = _nextPoint.X;
-                        numericUpDown4.Value = _nextPoint.Y;
                         using (Graphics g = Graphics.FromImage(pictureBox1.Image))
                         {
 
@@ -389,6 +397,8 @@ namespace DrawingTest
 
                             foreach (var x in listOfDrawnPoints)
                             {
+
+                                HSVBit hsvBit = directBitmapOrig.GetPixelHSV(x.X, x.Y);
                                 Color color = directBitmapOrig.GetPixel(x.X, x.Y);
                                 drawnPointList.Add(new DrawnPoint(directBitmapOrig.GetPixel(x.X, x.Y), x));
                                 histogramDataLineRGB.redHisto[color.R]++;
@@ -399,6 +409,21 @@ namespace DrawingTest
                                 formCaller.ser1.Points.AddXY(color.R, histogramDataLineRGB.redHisto[color.R]);
                                 formCaller.ser2.Points.AddXY(color.G, histogramDataLineRGB.greenHisto[color.G]);
                                 formCaller.ser3.Points.AddXY(color.B, histogramDataLineRGB.blueHisto[color.B]);
+
+
+                                histogramDataLineRGB.HSV_HHisto.TryGetValue(hsvBit.HUE, out helperValue);
+                                histogramDataLineRGB.HSV_HHisto[hsvBit.HUE] = helperValue + 1;
+
+                                histogramDataLineRGB.HSV_SHisto.TryGetValue(hsvBit.saturation, out helperValue);
+                                histogramDataLineRGB.HSV_SHisto[hsvBit.saturation] = helperValue + 1;
+
+                                histogramDataLineRGB.HSV_VHisto.TryGetValue(hsvBit.value, out helperValue);
+                                histogramDataLineRGB.HSV_VHisto[hsvBit.value] = helperValue + 1;
+
+                                formCaller.seriesHExt.Points.AddXY(hsvBit.HUE, histogramDataLineRGB.HSV_HHisto[hsvBit.HUE]);
+                                formCaller.seriesSExt.Points.AddXY(hsvBit.saturation, histogramDataLineRGB.HSV_SHisto[hsvBit.saturation]);
+                                formCaller.seriesVExt.Points.AddXY(hsvBit.value, histogramDataLineRGB.HSV_VHisto[hsvBit.value]);
+
                             }
 
                             foreach (var x in listOfDrawnPoints)
@@ -435,22 +460,26 @@ namespace DrawingTest
                 if (lastPoint != null)//if our last point is not null, which in this case we have assigned above
 
                 {
-
+                    
+                    //Rozpoczęcie nanoszenia zmian na obiekt pictureBox1
                     using (Graphics g = Graphics.FromImage(pictureBox1.Image))
                     {
-
+                        //pobranie listy narysowanych pikseli
                         listOfDrawnPoints = this.EnumerateLineNoDiagonalSteps(lastPoint.X, lastPoint.Y, e.X, e.Y);
 
+                        //generowanie modeli histogramów w oparciu o piksele które zostały zamalowane
                         foreach (var x in listOfDrawnPoints)
                         {
                             HSVBit hsvBit = directBitmapOrig.GetPixelHSV(x.X, x.Y);
                             Color color = directBitmapOrig.GetPixel(x.X, x.Y);
                             drawnPointList.Add(new DrawnPoint(directBitmapOrig.GetPixel(x.X, x.Y), x));
+
+                            //Dane histogramu RGB
                             histogramDataLineRGB.redHisto[color.R]++;
                             histogramDataLineRGB.blueHisto[color.B]++;
                             histogramDataLineRGB.greenHisto[color.G]++;
-                            //formCaller.histogramDataLineRGBProp = histogramDataLineRGB;
-
+                       
+                            //Dane hhhistogramu HSV
                             histogramDataLineRGB.HSV_HHisto.TryGetValue(hsvBit.HUE, out helperValue);
                             histogramDataLineRGB.HSV_HHisto[hsvBit.HUE] = helperValue + 1;
 
@@ -460,6 +489,8 @@ namespace DrawingTest
                             histogramDataLineRGB.HSV_VHisto.TryGetValue(hsvBit.value, out helperValue);
                             histogramDataLineRGB.HSV_VHisto[hsvBit.value] = helperValue + 1;
 
+
+                            //Dodawanie wygenerowanych danych do zbiorów danych połączonych z hisotgramami w Form1 
                             formCaller.ser1.Points.AddXY(color.R, histogramDataLineRGB.redHisto[color.R]);
                             formCaller.ser2.Points.AddXY(color.G, histogramDataLineRGB.greenHisto[color.G]);
                             formCaller.ser3.Points.AddXY(color.B, histogramDataLineRGB.blueHisto[color.B]);
@@ -470,19 +501,22 @@ namespace DrawingTest
 
                         }
 
+
+                        //"Zamalowywanie narysowanych punktów na czarno
                         foreach (var x in listOfDrawnPoints)
-                        {
-                           // drawnPointList.Add(new DrawnPoint(bitmap.GetPixel(x.X,x.Y), x));
-                           
+                        { 
                             directBitmap.SetPixel(x.X, x.Y, Color.Black);
                         }
                         g.DrawImage(directBitmap.Bitmap, new Point(0, 0));
-
+                        
+                        //Narysowanie nowego obrazu z użyciem directBitmap (obiketu edytowanego)
                     }
                   
+                    //odświeżenie obiektu pictureBox1
                     pictureBox1.Invalidate();//refreshes the picturebox
 
-                    lastPoint = e.Location;//keep assigning the lastPoint to the current mouse position
+                    //przypisanie zmiennej przechowywującej ostatni punkt na którym zarejestrowano zdarzenie ruchu myszki
+                    lastPoint = e.Location;
                     drawnPointList.Add(new DrawnPoint(directBitmap.GetPixel(lastPoint.X,lastPoint.Y), lastPoint));
 
 
@@ -493,24 +527,21 @@ namespace DrawingTest
 
         }
 
+        //Zarejestrowanie przerwania wciskania przycisku myszy
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-
         {
-
             isMouseDown = false;
-            if (false)
-            {
-                lastPoint = Point.Empty;
-            }
-
-            //set the previous point back to null if the user lets go of the mouse button
 
         }
 
+        //Metoda generująca linię od punktu a do punktu b (bez pijseli położonych wobec siebie na skos)
         private List<Point> EnumerateLineNoDiagonalSteps(int x0, int y0, int x1, int y1)
         {
-            //List<Tuple<int, int>> pointList = new List<Tuple<int, int>>();
+
+            //Zadeklarowanie listyy która zostanie zwrócona
             List<Point> pointList = new List<Point>();
+
+            //Określenie odległości pomiędzy punktami w płaszczyznach xy
             int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
             int dy = -Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
             int err = dx + dy, e2;
@@ -538,9 +569,11 @@ namespace DrawingTest
 
             return pointList;
         }
-
+        
+        //Resetowanie danych związnaych w narysowanymi liniami
         private void clearLine()
         {
+            
             Bitmap bitmap = (Bitmap)pictureBox1.Image;
             foreach (var point in drawnPointList)
             {
@@ -556,13 +589,11 @@ namespace DrawingTest
 
 
             pictureBox1.Invalidate();
-            //pictureBox1.Image = directBitmap.Bitmap;
             drawnPointList.Clear();
         }
 
 
-
-
+        //Czyszczenie listy narysowanych punktów wraz ze zbiorami danych
         private void tEKSTToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.clearLine();
@@ -576,45 +607,70 @@ namespace DrawingTest
         }
 
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-           
-            //numericUpDown1.Value = 0;
-        }
-
+        //Metody zmianiające sposó rysowania lini profilu
+        //rysowanie "odręczne"
         private void drawFreehandToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawingType = DrawingType.FreeHand;
         }
 
+        //Rysowanie pojedyńczymi liniami
         private void drawLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawingType = DrawingType.Line;
         }
 
+
+        //Rysowanie linii łamanej
         private void drawManyLlinesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             drawingType = DrawingType.ManyLines;
         }
 
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            //int[] mask = { 0, -1, 0, -1, 5, -1, 0, -1, 0 };
-            //projectEngine.neighborhoodOperation(mask, KernelMethod.NoBorders, SccalingMethod.Cut);
-
-            //using (Graphics g = Graphics.FromImage(pictureBox1.Image))
-            //{
-            //    g.DrawImage(projectEngine.directBitmapPost.Bitmap, new Point(0, 0));
-            //}
-           
-        }
-
+      
+        //Metoda wywołująca operację wygładzania
         private void toolStripMenuItem2_Click_1(object sender, EventArgs e)
         {
-            //  int[] mask = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            int[] mask = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
+            //Deklaracja maski
+            int[] mask = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+
+            //Operacja sąsiedztwa dla modelu HSV
             projectEngine.neighborhoodOperationHSV(mask, directBitmapOrig, directBitmap);
             
+
+            //Rysowanie obiektu directBitmap na pictureBox
+            using (Graphics g = Graphics.FromImage(pictureBox1.Image))
+            {
+                g.DrawImage(directBitmap.Bitmap, new Point(0, 0));
+            }
+
+            //Odświeżenie pictureBox
+            pictureBox1.Invalidate();
+
+
+            directBitmapOrig = new DirectBitmap(directBitmap);
+            //wygenerowanie bitów w modelu HSV dla bitmapy nowow przypisanej do obiektu directBitmapOrig
+            directBitmapOrig.generateHSVBits();     
+        }
+
+        //Rozpoczęcie procesu wymiany kwadratu 
+        private void editPixels20x20ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            drawingType = DrawingType.Retclange;
+            _nextPoint = Point.Empty;
+            _lastPoint = Point.Empty;         
+        }
+
+
+        //Operacja wyostrzania (analogicznie do operacji rozmycia)
+        private void sharpeningToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //generowanie maski
+            int[] mask = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
+
+            //Wykonaniae operacji sąsiedztwa
+            projectEngine.neighborhoodOperationHSV(mask, directBitmapOrig, directBitmap);
+
             using (Graphics g = Graphics.FromImage(pictureBox1.Image))
             {
                 g.DrawImage(directBitmap.Bitmap, new Point(0, 0));
@@ -625,23 +681,10 @@ namespace DrawingTest
 
             directBitmapOrig = new DirectBitmap(directBitmap);
             directBitmapOrig.generateHSVBits();
-
-            
-
-            
-        }
-
-        private void editPixels20x20ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            drawingType = DrawingType.Retclange;
-            _nextPoint = Point.Empty;
-            _lastPoint = Point.Empty;
-
-            
         }
     }
 
-
+    //Klasa reprezentująca 
     public class DrawingPiece
     {
         public Color[] colorsToApply { get; set; }
@@ -651,7 +694,7 @@ namespace DrawingTest
 
 
 
-
+    //Enum reprezentujący typ rysowania lini profilu
     public enum DrawingType
     {
         FreeHand,
