@@ -116,11 +116,27 @@ namespace DrawingTest
         private void AcceptBtn_Click(object sender, EventArgs e)
         {
             this.readDataAndAccept();
+            this.Close();
         }
 
         private void CancelBtn_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void SetZeros_Click(object sender, EventArgs e)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+
+                    redTextBoxValues[x + (y * Width)].Text = Convert.ToString(125);
+                  //  greenTextBoxValues[x + (y * Width)].Text = Convert.ToString(valuesColor[x + (y * Width)].G);
+                    //blueTextBoxValues[x + (y * Width)].Text = Convert.ToString(valuesColor[x + (y * Width)].B);
+
+                }
+            }
         }
     }
 }

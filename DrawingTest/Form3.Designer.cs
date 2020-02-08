@@ -37,6 +37,7 @@
             this.BlueTable = new System.Windows.Forms.TableLayoutPanel();
             this.AcceptBtn = new System.Windows.Forms.Button();
             this.CancelBtn = new System.Windows.Forms.Button();
+            this.SetZeros = new System.Windows.Forms.Button();
             this.Tabs.SuspendLayout();
             this.Red.SuspendLayout();
             this.Green.SuspendLayout();
@@ -254,11 +255,22 @@
             this.CancelBtn.UseVisualStyleBackColor = true;
             this.CancelBtn.Click += new System.EventHandler(this.CancelBtn_Click);
             // 
+            // SetZeros
+            // 
+            this.SetZeros.Location = new System.Drawing.Point(570, 13);
+            this.SetZeros.Name = "SetZeros";
+            this.SetZeros.Size = new System.Drawing.Size(75, 23);
+            this.SetZeros.TabIndex = 4;
+            this.SetZeros.Text = "SetZeros";
+            this.SetZeros.UseVisualStyleBackColor = true;
+            this.SetZeros.Click += new System.EventHandler(this.SetZeros_Click);
+            // 
             // Form3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(907, 630);
+            this.Controls.Add(this.SetZeros);
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.AcceptBtn);
             this.Controls.Add(this.Tabs);
@@ -283,5 +295,6 @@
         private System.Windows.Forms.TableLayoutPanel BlueTable;
         private System.Windows.Forms.Button AcceptBtn;
         private System.Windows.Forms.Button CancelBtn;
+        private System.Windows.Forms.Button SetZeros;
     }
 }

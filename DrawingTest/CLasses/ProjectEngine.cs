@@ -534,14 +534,15 @@ public class ProjectEngine
                         var bit = directBitmapPost.GetPixelHSV(x, y);
                       
                         calculatedHSVBit.saturation = bit.saturation;
-                        //calculatedHSVBit.value = bit.value;
+                   
                         calculatedHSVBit.HUE = bit.HUE;
-                        //directBitmapPost.SetPixel(x,y)
-                         if (calculatedHSVBit.HUE != bit.HUE)
-                             bit = null;
+                        //apply cut scalling
+                        if (calculatedHSVBit.value > 1)
+                            calculatedHSVBit.value = 1;
 
-                        //if (calculatedHSVBit.saturation != bit.saturation)
-                        //    bit = null;
+                        if (calculatedHSVBit.value < 0)
+                            calculatedHSVBit.value = 0;
+                     
                         directBitmapPost.SetPixel(x, y, calculatedHSVBit.getColor());
                     }
                     else
@@ -557,25 +558,7 @@ public class ProjectEngine
                 }
             }
 
-            if (sccalingMethod == SccalingMethod.Scale)
-            {
-                int minValue = bitMapToScale.Min();
-                int maxValue = bitMapToScale.Max();
-                int pixelScalled;
-                List<int> checkList = new List<int>();
-
-
-
-                for (int x = 0; x < directBitmapPre.Width - overlap; ++x)
-                {
-                    for (int y = 0; y < directBitmapPre.Height - overlap; ++y)
-                    {
-                        pixelScalled = (int)(((decimal)(bitMapToScale[x + (y * directBitmapPre.Width)] - minValue) / (decimal)(maxValue - minValue)) * 255);
-                        checkList.Add(pixelScalled);
-                        directBitmapPost.SetPixel(x, y, Color.FromArgb(pixelScalled, pixelScalled, pixelScalled));
-                    }
-                }
-            }
+           
 
         }
         private int ScalePixelValue(int pixel, SccalingMethod method, int min = 0, int max = 255)

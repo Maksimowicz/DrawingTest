@@ -77,13 +77,9 @@ namespace DrawingTest
             }
         }
 
-
-        //  = Point.Empty;//Point.Empty represents null for a Point object
-
-        bool isMouseDown = new Boolean();//this is used to evaluate whether our mousebutton is down or not
+       
 
         List<DrawnPoint> drawnPointList;
-
 
 
         public Form1()
@@ -137,7 +133,7 @@ namespace DrawingTest
                 Color = Color.Aqua,
                 IsVisibleInLegend = false,
                 IsXValueIndexed = false,
-                ChartType = SeriesChartType.Point
+                ChartType = SeriesChartType.Column
             };
 
             seriesSExt = new Series
@@ -146,7 +142,7 @@ namespace DrawingTest
                 Color = Color.Black,
                 IsVisibleInLegend = true,
                 IsXValueIndexed = false,
-                ChartType = SeriesChartType.Point
+                ChartType = SeriesChartType.Column
             };
 
             seriesVExt = new Series
@@ -155,7 +151,7 @@ namespace DrawingTest
                 Color = Color.Red,
                 IsVisibleInLegend = true,
                 IsXValueIndexed = false,
-                ChartType = SeriesChartType.Point
+                ChartType = SeriesChartType.Column
             };
 
             HLine.Series.Add(seriesHExt);
@@ -227,7 +223,7 @@ namespace DrawingTest
                     Color = Color.Aqua,
                     IsVisibleInLegend = false,
                     IsXValueIndexed = false,
-                    ChartType = SeriesChartType.FastPoint
+                    ChartType = SeriesChartType.Column
                 };
                 seriesH.XValueType = ChartValueType.Double;
                 chartControl.Series.Add(seriesH);
@@ -246,7 +242,7 @@ namespace DrawingTest
                     Color = Color.Black,
                     IsVisibleInLegend = true,
                     IsXValueIndexed = false,
-                    ChartType = SeriesChartType.FastPoint
+                    ChartType = SeriesChartType.Column
 
                 };
 
@@ -258,7 +254,7 @@ namespace DrawingTest
                     Color = Color.Red,
                     IsVisibleInLegend = true,
                     IsXValueIndexed = false,
-                    ChartType = SeriesChartType.FastPoint
+                    ChartType = SeriesChartType.Column
                 };
 
                 seriesV.XValueType = ChartValueType.Double;
@@ -335,14 +331,5 @@ namespace DrawingTest
             //ChartGroup.Visible = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int[] maks = { 1, 2, 3, 4,5, 6 };
-           // Form3 form3 = new Form3(3,2,maks );
-           // form3.ImageToShow = img;
-
-
-           // form3.Show();
-        }
     }
 }

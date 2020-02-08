@@ -53,7 +53,7 @@ namespace DrawingTest
             set
             {
                 drawingPiece = value;
-                //TODO: funcka rysująca zmiany
+                this.readFromFrom3();
             }
         }
        
@@ -114,9 +114,8 @@ namespace DrawingTest
             Point pointAInner = drawingPiece.pointA;
             Point pointBInner = drawingPiece.pointB;
 
-            if (Math.Abs(differenceX) > 20)
-            {
-                if (differenceX > 0)
+       
+                if (differenceX < 0)
                 {
                    
                     XStart = pointAInner.X;
@@ -129,11 +128,9 @@ namespace DrawingTest
                     XStart = pointBInner.X;
                     XEnd = pointAInner.X;
                 }
-            }
+            
 
-            if (Math.Abs(differenceY) > 20)
-            {
-                if (differenceY > 0)
+                if (differenceY < 0)
                 {
                     YStart = pointAInner.Y;
                     YEnd = pointBInner.Y;
@@ -143,19 +140,29 @@ namespace DrawingTest
                     YStart = pointBInner.Y;
                     YEnd = pointAInner.Y;
                 }
-            }
+            
             int xInner = 0;
             int yInner = 0;
-
+            int innerwidth = Math.Abs(drawingPiece.pointA.X - drawingPiece.pointB.X);
             for (int x = XStart; x < XEnd; x++)
             {
                 for (int y = YStart; y < YEnd; y++)
                 {
-                    directBitmap.SetPixel(x, y, drawingPiece.colorsToApply[x + (y * Width)]);
+                    directBitmap.SetPixel(x, y, drawingPiece.colorsToApply[xInner + (yInner * innerwidth)]);
+                    yInner++;
                 }
                 yInner = 0;
                 xInner++;
             }
+
+            this.clearLine();
+
+            using (Graphics g = Graphics.FromImage(pictureBox1.Image))
+            {
+                g.DrawImage(directBitmap.Bitmap, new Point(0, 0));
+            }
+
+            pictureBox1.Invalidate();
         }
 
 
@@ -281,8 +288,7 @@ namespace DrawingTest
                         }
                         pictureBox1.Invalidate();
 
-                        _nextPoint = Point.Empty;
-                        _lastPoint = Point.Empty;
+                      
 
 
                         int Width = Math.Abs(XStart - XEnd);
@@ -308,8 +314,9 @@ namespace DrawingTest
                         
                         Form3 form3 = new Form3(Height, Width, valuesToPass, lastPoint, _nextPoint, this);
                         form3.Show();
+                        _nextPoint = Point.Empty;
+                        _lastPoint = Point.Empty;
 
-                       
 
                     }
 
@@ -350,23 +357,13 @@ namespace DrawingTest
                                 histogramDataLineRGB.blueHisto[color.B]++;
                                 histogramDataLineRGB.greenHisto[color.G]++;
 
-
-                                //histogramData.HSV_HHisto.TryGetValue(hsvBitHelp.HUE, out helperValue);  
-                                //histogramData.HSV_HHisto[hsvBitHelp.HUE] = helperValue + 1;
-
-                                //histogramData.HSV_SHisto.TryGetValue(hsvBitHelp.saturation, out helperValue);
-                                //histogramData.HSV_SHisto[hsvBitHelp.saturation] = helperValue + 1;
-
-                                //histogramData.HSV_VHisto.TryGetValue(hsvBitHelp.value, out helperValue);
-                                //histogramData.HSV_VHisto[hsvBitHelp.value] = helperValue + 1;
-
-                                histogramDataLineRGB.HSV_HHisto.TryGetValue(hsvBit.HUE, out helperValue);
+                                histogramDataLineRGB.HSV_HHisto.TryGetValue((float)Math.Round(hsvBit.HUE, 0), out helperValue);
                                 histogramDataLineRGB.HSV_HHisto[hsvBit.HUE] = helperValue + 1;
 
-                                histogramDataLineRGB.HSV_SHisto.TryGetValue(hsvBit.saturation, out helperValue);
+                                histogramDataLineRGB.HSV_SHisto.TryGetValue((float)Math.Round(hsvBit.saturation,1), out helperValue);
                                 histogramDataLineRGB.HSV_SHisto[hsvBit.saturation] = helperValue + 1;
 
-                                histogramDataLineRGB.HSV_VHisto.TryGetValue(hsvBit.value, out helperValue);
+                                histogramDataLineRGB.HSV_VHisto.TryGetValue((float)Math.Round(hsvBit.value,1), out helperValue);
                                 histogramDataLineRGB.HSV_VHisto[hsvBit.value] = helperValue + 1;
 
 
@@ -380,16 +377,10 @@ namespace DrawingTest
                                 formCaller.seriesSExt.Points.AddXY(hsvBit.saturation, histogramDataLineRGB.HSV_SHisto[hsvBit.saturation]);
                                 formCaller.seriesVExt.Points.AddXY(hsvBit.value, histogramDataLineRGB.HSV_VHisto[hsvBit.value]);
 
-                               // formCaller.seriesHExt.AddXY()
-                                
-
-
-
                             }
 
                             foreach (var x in listOfDrawnPoints)
                             {
-                                // drawnPointList.Add(new DrawnPoint(bitmap.GetPixel(x.X,x.Y), x));
 
                                 directBitmap.SetPixel(x.X, x.Y, Color.Black);
                             }
@@ -399,7 +390,7 @@ namespace DrawingTest
 
                         pictureBox1.Invalidate();//refreshes the picturebox
                         lastPoint = new Point();
-                        //lastPoint = e.Location;//keep assigning the lastPoint to the current mouse position
+                
                         drawnPointList.Add(new DrawnPoint(directBitmap.GetPixel(lastPoint.X, lastPoint.Y), lastPoint));
                     }
                     break;
@@ -446,7 +437,7 @@ namespace DrawingTest
                         }
 
                         pictureBox1.Invalidate();//refreshes the picturebox
-                                                 // lastPoint = new Point();
+                                          
                         lastPoint = _nextPoint;//keep assigning the lastPoint to the current mouse position
                         drawnPointList.Add(new DrawnPoint(directBitmap.GetPixel(lastPoint.X, lastPoint.Y), lastPoint));
                     }
@@ -461,8 +452,6 @@ namespace DrawingTest
 
         {
             List<Point> listOfDrawnPoints;
-            //Bitmap bitmap = (Bitmap)pictureBox1.Image;
-            //Bitmap bitmap2 = (Bitmap)bitmap.Clone();
             if (isMouseDown == true && drawingType == DrawingType.FreeHand)//check to see if the mouse button is down
 
             {
@@ -470,16 +459,6 @@ namespace DrawingTest
                 if (lastPoint != null)//if our last point is not null, which in this case we have assigned above
 
                 {
-
-                    if (pictureBox1.Image == null)//if no available bitmap exists on the picturebox to draw on
-
-                    {
-                        //create a new bitmap
-                       // Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-
-                       // pictureBox1.Image = bmp; //assign the picturebox.Image property to the bitmap created
-
-                    }
 
                     using (Graphics g = Graphics.FromImage(pictureBox1.Image))
                     {
@@ -569,7 +548,7 @@ namespace DrawingTest
             return pointList;
         }
 
-        private void tEKSTToolStripMenuItem_Click(object sender, EventArgs e)
+        private void clearLine()
         {
             Bitmap bitmap = (Bitmap)pictureBox1.Image;
             foreach (var point in drawnPointList)
@@ -588,6 +567,14 @@ namespace DrawingTest
             pictureBox1.Invalidate();
             //pictureBox1.Image = directBitmap.Bitmap;
             drawnPointList.Clear();
+        }
+
+
+
+
+        private void tEKSTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.clearLine();
 
             formCaller.ser1.Points.Clear();
             formCaller.ser2.Points.Clear();
